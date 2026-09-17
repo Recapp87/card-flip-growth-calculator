@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#05070b">
+  <title>Detailed Portfolio Calculator</title>
+
+  <style>
+    :root {
+      --background: #05070b;
+      --panel: #111827;
+      --panel-light: #172033;
+      --border: #2b3850;
+      --text: #f7f9fc;
+      --muted: #9ca9bd;
+      --blue: #2877ff;
+      --blue-light: #55a7ff;
+      --silver: #c7d0dc;
+      --green: #35d07f;
+      --yellow: #ffcc66;
+      --red: #ff6b78;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(40, 119, 255, 0.18),
+          transparent 34rem
+        ),
+        var(--background);
+      color: var(--text);
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button,
+    select {
+      cursor: pointer;
+    }
+
+    .page {
+      width: min(1160px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 26px 0 48px;
+    }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .nav a {
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(17, 24, 39, 0.86);
+      color: var(--silver);
+      text-decoration: none;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .nav a.active {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 8px 24px rgba(40, 119, 255, 0.28);
+    }
+
+    .hero {
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--blue-light);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(1.9rem, 6vw, 3.2rem);
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+    }
+
+    h2 {
+      margin-bottom: 6px;
+      font-size: 1.2rem;
+    }
+
+    .subtitle,
+    .section-copy,
+    .fine-print {
+      color: var(--muted);
+    }
+
+    .subtitle {
+      max-width: 800px;
+      margin-bottom: 0;
+    }
+
+    .section-copy {
+      margin-bottom: 0;
+      font-size: 0.91rem;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(17, 24, 39, 0.94);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .settings-grid,
+    .cost-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      color: var(--silver);
+      font-size: 0.79rem;
+      font-weight: 750;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: block;
+      margin-top: 6px;
+    }
+
+    .prefix,
+    .suffix {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .prefix {
+      left: 13px;
+    }
+
+    .suffix {
+      right: 13px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      outline: none;
+      background: #0a0f19;
+      color: var(--text);
+      padding: 11px 12px;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--blue-light);
+      box-shadow: 0 0 0 3px rgba(40, 119, 255, 0.18);
+    }
+
+    input:disabled,
+    select:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    input.with-prefix {
+      padding-left: 27px;
+    }
+
+    input.with-suffix {
+      padding-right: 32px;
+    }
+
+    .duration-control {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 7px;
+    }
+
+    .card-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card-plan {
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--panel-light);
+      padding: 15px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 13px;
+    }
+
+    .card-title {
+      margin: 0;
+      color: var(--blue-light);
+      font-weight: 800;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.65fr 1fr 1fr 0.85fr;
+      gap: 10px;
+    }
+
+    .timing-grid {
+      display: grid;
+      grid-template-columns: 1.55fr 0.7fr 0.9fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .custom-costs {
+      display: none;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #0a0f19;
+    }
+
+    .custom-costs.visible {
+      display: grid;
+    }
+
+    .card-calculation {
+      margin: 11px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .card-actions,
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 13px;
+    }
+
+    .remove-button,
+    .secondary-button,
+    .primary-button {
+      min-height: 42px;
+      border-radius: 11px;
+      padding: 9px 14px;
+      font-weight: 800;
+    }
+
+    .remove-button {
+      min-height: auto;
+      border: 0;
+      background: transparent;
+      color: #ff9ca5;
+      padding: 5px 6px;
+    }
+
+    .secondary-button {
+      border: 1px solid var(--blue);
+      background: rgba(40, 119, 255, 0.1);
+      color: var(--blue-light);
+    }
+
+    .primary-button {
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 8px 24px rgba(40, 119, 255, 0.26);
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #0a0f19;
+    }
+
+    summary {
+      padding: 14px 16px;
+      color: var(--silver);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .details-body {
+      padding: 0 16px 16px;
+    }
+
+    .message {
+      display: none;
+      margin: 0 0 14px;
+      border-radius: 11px;
+      padding: 11px 13px;
+      font-size: 0.9rem;
+    }
+
+    .message.visible {
+      display: block;
+    }
+
+    .error {
+      border: 1px solid rgba(255, 107, 120, 0.52);
+      background: rgba(255, 107, 120, 0.1);
+      color: #ffc0c6;
+    }
+
+    .warning {
+      border: 1px solid rgba(255, 204, 102, 0.48);
+      background: rgba(255, 204, 102, 0.09);
+      color: #ffe0a1;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .result-card {
+      min-height: 116px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #0a0f19;
+      padding: 15px;
+    }
+
+    .result-card.primary {
+      border-color: var(--blue);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(40, 119, 255, 0.18),
+          rgba(10, 15, 25, 0.98)
+        );
+    }
+
+    .result-label {
+      display: block;
+      min-height: 38px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    .result-value {
+      display: block;
+      margin-top: 5px;
+      font-size: clamp(1.1rem, 4vw, 1.55rem);
+      font-weight: 850;
+      letter-spacing: -0.035em;
+      overflow-wrap: anywhere;
+    }
+
+    .positive {
+      color: var(--green);
+    }
+
+    .negative {
+      color: var(--red);
+    }
+
+    .neutral {
+      color: var(--text);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: collapse;
+      background: #0a0f19;
+    }
+
+    th,
+    td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--border);
+      text-align: right;
+      white-space: nowrap;
+      font-size: 0.84rem;
+    }
+
+    th:first-child,
+    td:first-child,
+    th:nth-child(2),
+    td:nth-child(2) {
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.74rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .fine-print {
+      margin: 14px 0 0;
+      font-size: 0.79rem;
+    }
+
+    @media (max-width: 900px) {
+      .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .card-grid label:first-child {
+        grid-column: 1 / -1;
+      }
+
+      .results-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 650px) {
+      .page {
+        width: min(100% - 18px, 1160px);
+        padding-top: 12px;
+      }
+
+      .nav,
+      .settings-grid,
+      .cost-grid,
+      .card-grid,
+      .timing-grid,
+      .custom-costs,
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav a {
+        min-height: 40px;
+      }
+
+      .section {
+        padding: 16px;
+      }
+
+      .card-grid label:first-child {
+        grid-column: auto;
+      }
+
+      .section-heading {
+        display: block;
+      }
+
+      .section-heading .secondary-button {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .result-card {
+        min-height: 0;
+      }
+
+      .result-label {
+        min-height: 0;
+      }
+
+      .button-row > *,
+      .card-actions > * {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <nav class="nav" aria-label="Calculator pages">
+      <a href="index.html">Single-Card Calculator</a>
+      <a href="group-portfolio.html">Group Portfolio Calculator</a>
+      <a
+        href="detailed-portfolio.html"
+        class="active"
+        aria-current="page"
+      >
+        Detailed Portfolio Calculator
+      </a>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">The Card TBL</p>
+      <h1>Detailed Portfolio Calculator</h1>
+      <p class="subtitle">
+        Plan individual purchases and sales through one shared cash balance.
+        Sale proceeds can remain as cash or fund one or several future cards.
+      </p>
+    </header>
+
+    <div class="panel">
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <h2>Portfolio settings</h2>
+            <p class="section-copy">
+              Enter the cash available at the beginning and choose how far
+              into the future to calculate.
+            </p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <label>
+            Starting available cash
+            <span class="input-wrap">
+              <span class="prefix">$</span>
+              <input
+                id="startingCash"
+                class="with-prefix"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value="2000"
+                inputmode="decimal"
+              >
+            </span>
+          </label>
+
+          <label>
+            Projection length
+            <span class="duration-control">
+              <span class="input-wrap">
+                <input
+                  id="projectionLength"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value="6"
+                  inputmode="numeric"
+                >
+              </span>
+
+              <select id="projectionUnit" aria-label="Projection unit">
+                <option value="days">Days</option>
+                <option value="months" selected>Months</option>
+                <option value="years">Years</option>
+              </select>
+            </span>
+          </label>
+
+          <label>
+            Projection length in days
+            <span class="input-wrap">
+              <input
+                id="daysDisplay"
+                type="text"
+                value="183"
+                readonly
+                aria-readonly="true"
+              >
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <h2>Card purchase plan</h2>
+            <p class="section-copy">
+              Add cards purchased with starting cash or schedule a card to be
+              purchased after another card sells.
+            </p>
+          </div>
+
+          <button
+            id="addStartingCardTop"
+            class="secondary-button"
+            type="button"
+          >
+            + Add starting card
+          </button>
+        </div>
+
+        <div id="cardList" class="card-list"></div>
+
+        <div class="button-row">
+          <button
+            id="addStartingCardBottom"
+            class="secondary-button"
+            type="button"
+          >
+            + Add another starting card
+          </button>
+
+          <button id="resetButton" class="primary-button" type="button">
+            Reset example
+          </button>
+        </div>
+      </section>
+
+      <section class="section">
+        <details>
+          <summary>Default optional costs</summary>
+
+          <div class="details-body">
+            <p class="section-copy">
+              These defaults apply to every card unless that card is set to
+              use custom costs.
+            </p>
+
+            <div class="cost-grid" style="margin-top: 14px;">
+              <label>
+                Selling/platform fee
+                <span class="input-wrap">
+                  <input
+                    id="defaultFee"
+                    class="with-suffix"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    value="0"
+                    inputmode="decimal"
+                  >
+                  <span class="suffix">%</span>
+                </span>
+              </label>
+
+              <label>
+                Shipping per card sold
+                <span class="input-wrap">
+                  <span class="prefix">$</span>
+                  <input
+                    id="defaultShipping"
+                    class="with-prefix"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    inputmode="decimal"
+                  >
+                </span>
+              </label>
+
+              <label>
+                Other cost per card
+                <span class="input-wrap">
+                  <span class="prefix">$</span>
+                  <input
+                    id="defaultOther"
+                    class="with-prefix"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    inputmode="decimal"
+                  >
+                </span>
+              </label>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <h2>Projected results</h2>
+            <p id="projectionSummary" class="section-copy"></p>
+          </div>
+        </div>
+
+        <p
+          id="errorMessage"
+          class="message error"
+          role="alert"
+        ></p>
+
+        <p
+          id="warningMessage"
+          class="message warning"
+          role="status"
+        ></p>
+
+        <div class="results-grid" aria-live="polite">
+          <div class="result-card primary">
+            <span class="result-label">Ending balance at cost</span>
+            <strong id="endingBalance" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">Realized profit</span>
+            <strong id="realizedProfit" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">Cash available at end</span>
+            <strong id="cashAtEnd" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">Completed card sales</span>
+            <strong id="completedSales" class="result-value neutral">
+              0
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">Unsold inventory cost</span>
+            <strong id="unsoldCost" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">
+              Expected net value of unsold inventory
+            </span>
+            <strong id="unsoldValue" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">
+              Potential total profit after unsold cards sell
+            </span>
+            <strong id="potentialProfit" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">
+              Total money placed into card purchases
+            </span>
+            <strong id="totalInvested" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Card</th>
+                <th>Funding</th>
+                <th>Purchase day</th>
+                <th>Status</th>
+                <th>Invested</th>
+                <th>Expected net sale</th>
+                <th>Expected profit</th>
+                <th>ROI</th>
+              </tr>
+            </thead>
+
+            <tbody id="breakdownBody"></tbody>
+          </table>
+        </div>
+
+        <p class="fine-print">
+          Purchases and sales are processed chronologically through one shared
+          cash balance. Sales occurring on the same day as a planned purchase
+          are added to cash first. Unsold-card profit remains potential until
+          the card sells.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const cardList = document.getElementById("cardList");
+    const errorMessage = document.getElementById("errorMessage");
+    const warningMessage = document.getElementById("warningMessage");
+
+    let nextCardId = 1;
+
+    const currency = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    const wholeNumber = new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: 0
+    });
+
+    function money(value) {
+      return Number.isFinite(value)
+        ? currency.format(value)
+        : "Too large";
+    }
+
+    function roundMoney(value) {
+      return Math.round((value + Number.EPSILON) * 100) / 100;
+    }
+
+    function safeText(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function numberValue(id) {
+      return Number(document.getElementById(id).value);
+    }
+
+    function projectionDays() {
+      const length = numberValue("projectionLength");
+      const unit = document.getElementById("projectionUnit").value;
+
+      const multiplier =
+        unit === "years"
+          ? 365
+          : unit === "months"
+            ? 365 / 12
+            : 1;
+
+      return length * multiplier;
+    }
+
+    function cardName(element, fallback = "Unnamed card") {
+      return (
+        element.querySelector(".card-name").value.trim() ||
+        fallback
+      );
+    }
+
+    function addCard(values = {}, sourceId = "") {
+      const id = String(nextCardId++);
+      const card = document.createElement("article");
+
+      card.className = "card-plan";
+      card.dataset.cardId = id;
+
+      card.innerHTML = `
+        <div class="card-header">
+          <p class="card-title">Card plan ${id}</p>
+
+          <button
+            class="remove-button"
+            type="button"
+            aria-label="Remove this card plan"
+          >
+            Remove
+          </button>
+        </div>
+
+        <div class="card-grid">
+          <label>
+            Card name
+            <span class="input-wrap">
+              <input
+                class="card-name"
+                type="text"
+                maxlength="80"
+                value="${safeText(values.name || `Card ${id}`)}"
+              >
+            </span>
+          </label>
+
+          <label>
+            Quantity
+            <span class="input-wrap">
+              <input
+                class="card-quantity"
+                type="number"
+                min="1"
+                step="1"
+                value="${values.quantity ?? 1}"
+                inputmode="numeric"
+              >
+            </span>
+          </label>
+
+          <label>
+            Purchase price per card
+            <span class="input-wrap">
+              <span class="prefix">$</span>
+              <input
+                class="purchase-price with-prefix"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value="${values.purchasePrice ?? 100}"
+                inputmode="decimal"
+              >
+            </span>
+          </label>
+
+          <label>
+            Expected sale price per card
+            <span class="input-wrap">
+              <span class="prefix">$</span>
+              <input
+                class="sale-price with-prefix"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value="${values.salePrice ?? 125}"
+                inputmode="decimal"
+              >
+            </span>
+          </label>
+
+          <label>
+            Expected days to sell
+            <span class="input-wrap">
+              <input
+                class="days-to-sell"
+                type="number"
+                min="1"
+                step="1"
+                value="${values.daysToSell ?? 30}"
+                inputmode="numeric"
+              >
+            </span>
+          </label>
+        </div>
+
+        <div class="timing-grid">
+          <label>
+            Purchase funding and timing
+            <select class="funding-source"></select>
+          </label>
+
+          <label>
+            Delay after funding sale
+            <span class="input-wrap">
+              <input
+                class="purchase-delay"
+                type="number"
+                min="0"
+                step="1"
+                value="${values.delay ?? 0}"
+                inputmode="numeric"
+              >
+            </span>
+          </label>
+
+          <label>
+            Cost settings
+            <select class="cost-mode">
+              <option
+                value="default"
+                ${values.costMode !== "custom" ? "selected" : ""}
+              >
+                Use portfolio defaults
+              </option>
+
+              <option
+                value="custom"
+                ${values.costMode === "custom" ? "selected" : ""}
+              >
+                Use custom costs
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <div class="custom-costs">
+          <label>
+            Custom selling fee
+            <span class="input-wrap">
+              <input
+                class="custom-fee with-suffix"
+                type="number"
+                min="0"
+                max="100"
+                step="0.01"
+                value="${values.customFee ?? 0}"
+                inputmode="decimal"
+              >
+              <span class="suffix">%</span>
+            </span>
+          </label>
+
+          <label>
+            Custom shipping per card
+            <span class="input-wrap">
+              <span class="prefix">$</span>
+              <input
+                class="custom-shipping with-prefix"
+                type="number"
+                min="0"
+                step="0.01"
+                value="${values.customShipping ?? 0}"
+                inputmode="decimal"
+              >
+            </span>
+          </label>
+
+          <label>
+            Custom other cost per card
+            <span class="input-wrap">
+              <span class="prefix">$</span>
+              <input
+                class="custom-other with-prefix"
+                type="number"
+                min="0"
+                step="0.01"
+                value="${values.customOther ?? 0}"
+                inputmode="decimal"
+              >
+            </span>
+          </label>
+        </div>
+
+        <p class="card-calculation">
+          Purchase percentage:
+          <strong class="purchase-percentage">0%</strong>
+          · Expected net profit:
+          <strong class="expected-card-profit">$0.00</strong>
+        </p>
+
+        <div class="card-actions">
+          <button
+            class="secondary-button add-reinvestment"
+            type="button"
+          >
+            + Use this sale for another card
+          </button>
+        </div>
+      `;
+
+      card
+        .querySelector(".remove-button")
+        .addEventListener("click", () => {
+          if (cardList.children.length === 1) {
+            showError("At least one card plan is required.");
+            return;
+          }
+
+          card.remove();
+          refreshFundingOptions();
+          calculate();
+        });
+
+      card
+        .querySelector(".add-reinvestment")
+        .addEventListener("click", () => {
+          const newId = addCard({}, id);
+
+          const newCard = cardList.querySelector(
+            `[data-card-id="${newId}"]`
+          );
+
+          if (newCard) {
+            newCard.scrollIntoView({
+              behavior: "smooth",
+              block: "center"
+            });
+          }
+        });
+
+      cardList.appendChild(card);
+      refreshFundingOptions();
+
+      if (sourceId) {
+        const sourceSelect =
+          card.querySelector(".funding-source");
+
+        const sourceExists = [...sourceSelect.options].some(
+          option => option.value === String(sourceId)
+        );
+
+        if (sourceExists) {
+          sourceSelect.value = String(sourceId);
+        }
+      }
+
+      updateCardVisibility(card);
+      calculate();
+
+      return id;
+    }
+
+    function refreshFundingOptions() {
+      const cards = [
+        ...cardList.querySelectorAll(".card-plan")
+      ];
+
+      cards.forEach((card, index) => {
+        const select =
+          card.querySelector(".funding-source");
+
+        const previousValue = select.value;
+
+        let options =
+          '<option value="">Use available cash at the start</option>';
+
+        cards
+          .slice(0, index)
+          .forEach(previousCard => {
+            const previousId =
+              previousCard.dataset.cardId;
+
+            const name = cardName(
+              previousCard,
+              `Card plan ${previousId}`
+            );
+
+            options +=
+              `<option value="${previousId}">` +
+              `After ${safeText(name)} sells` +
+              `</option>`;
+          });
+
+        select.innerHTML = options;
+
+        const previousStillExists = [
+          ...select.options
+        ].some(option => option.value === previousValue);
+
+        if (previousStillExists) {
+          select.value = previousValue;
+        }
+
+        updateCardVisibility(card);
+      });
+    }
+
+    function updateCardVisibility(card) {
+      const source =
+        card.querySelector(".funding-source").value;
+
+      const delayInput =
+        card.querySelector(".purchase-delay");
+
+      delayInput.disabled = !source;
+
+      if (!source) {
+        delayInput.value = 0;
+      }
+
+      const custom =
+        card.querySelector(".cost-mode").value === "custom";
+
+      card
+        .querySelector(".custom-costs")
+        .classList.toggle("visible", custom);
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.add("visible");
+    }
+
+    function clearMessages() {
+      errorMessage.textContent = "";
+      errorMessage.classList.remove("visible");
+
+      warningMessage.textContent = "";
+      warningMessage.classList.remove("visible");
+    }
+
+    function showWarnings(warnings) {
+      if (!warnings.length) {
+        return;
+      }
+
+      warningMessage.textContent = warnings.join(" ");
+      warningMessage.classList.add("visible");
+    }
+
+    function readCosts(card, defaults) {
+      const custom =
+        card.querySelector(".cost-mode").value === "custom";
+
+      const fee = custom
+        ? Number(card.querySelector(".custom-fee").value)
+        : defaults.fee;
+
+      const shipping = custom
+        ? Number(card.querySelector(".custom-shipping").value)
+        : defaults.shipping;
+
+      const other = custom
+        ? Number(card.querySelector(".custom-other").value)
+        : defaults.other;
+
+      if (
+        !Number.isFinite(fee) ||
+        fee < 0 ||
+        fee > 100
+      ) {
+        throw new Error(
+          `${cardName(card)}: selling fee must be between 0% and 100%.`
+        );
+      }
+
+      if (
+        !Number.isFinite(shipping) ||
+        shipping < 0 ||
+        !Number.isFinite(other) ||
+        other < 0
+      ) {
+        throw new Error(
+          `${cardName(card)}: costs cannot be negative.`
+        );
+      }
+
+      return {
+        fee: fee / 100,
+        shipping,
+        other
+      };
+    }
+
+    function readCardPlans(defaults) {
+      const cards = [
+        ...cardList.querySelectorAll(".card-plan")
+      ];
+
+      return cards.map((element, order) => {
+        const id = element.dataset.cardId;
+
+        const name = cardName(
+          element,
+          `Card plan ${id}`
+        );
+
+        const quantity = Number(
+          element.querySelector(".card-quantity").value
+        );
+
+        const purchasePrice = Number(
+          element.querySelector(".purchase-price").value
+        );
+
+        const salePrice = Number(
+          element.querySelector(".sale-price").value
+        );
+
+        const daysToSell = Number(
+          element.querySelector(".days-to-sell").value
+        );
+
+        const sourceId =
+          element.querySelector(".funding-source").value;
+
+        const delay = Number(
+          element.querySelector(".purchase-delay").value
+        );
+
+        const costs = readCosts(element, defaults);
+
+        if (
+          !Number.isInteger(quantity) ||
+          quantity < 1
+        ) {
+          throw new Error(
+            `${name}: quantity must be a whole number of at least 1.`
+          );
+        }
+
+        if (
+          !Number.isFinite(purchasePrice) ||
+          purchasePrice <= 0
+        ) {
+          throw new Error(
+            `${name}: purchase price must be greater than $0.`
+          );
+        }
+
+        if (
+          !Number.isFinite(salePrice) ||
+          salePrice <= 0
+        ) {
+          throw new Error(
+            `${name}: expected sale price must be greater than $0.`
+          );
+        }
+
+        if (
+          !Number.isInteger(daysToSell) ||
+          daysToSell < 1
+        ) {
+          throw new Error(
+            `${name}: expected days to sell must be a whole number of at least 1.`
+          );
+        }
+
+        if (
+          !Number.isInteger(delay) ||
+          delay < 0
+        ) {
+          throw new Error(
+            `${name}: purchase delay must be a whole number of 0 or more.`
+          );
+        }
+
+        const totalPurchase = roundMoney(
+          quantity * purchasePrice
+        );
+
+        const grossSale = roundMoney(
+          quantity * salePrice
+        );
+
+        const netSale = Math.max(
+          0,
+          roundMoney(
+            grossSale -
+            grossSale * costs.fee -
+            quantity * (costs.shipping + costs.other)
+          )
+        );
+
+        const expectedProfit = roundMoney(
+          netSale - totalPurchase
+        );
+
+        return {
+          id,
+          order,
+          element,
+          name,
+          quantity,
+          purchasePrice,
+          salePrice,
+          daysToSell,
+          sourceId,
+          delay,
+          totalPurchase,
+          grossSale,
+          netSale,
+          expectedProfit,
+          purchaseDay: 0,
+          saleDay: 0,
+          funded: false,
+          sold: false,
+          status: "Not yet processed"
+        };
+      });
+    }
+
+    function calculateSchedules(plans) {
+      const byId = new Map(
+        plans.map(plan => [plan.id, plan])
+      );
+
+      const resolved = new Set();
+      const resolving = new Set();
+
+      function resolve(plan) {
+        if (resolved.has(plan.id)) {
+          return;
+        }
+
+        if (resolving.has(plan.id)) {
+          throw new Error(
+            `${plan.name}: the funding sequence contains a loop.`
+          );
+        }
+
+        resolving.add(plan.id);
+
+        if (plan.sourceId) {
+          const source = byId.get(plan.sourceId);
+
+          if (!source) {
+            throw new Error(
+              `${plan.name}: its selected funding card no longer exists.`
+            );
+          }
+
+          resolve(source);
+
+          plan.purchaseDay =
+            source.saleDay + plan.delay;
+        } else {
+          plan.purchaseDay = 0;
+        }
+
+        plan.saleDay =
+          plan.purchaseDay + plan.daysToSell;
+
+        resolving.delete(plan.id);
+        resolved.add(plan.id);
+      }
+
+      plans.forEach(resolve);
+
+      return byId;
+    }
+
+    function runCashPool(
+      plans,
+      byId,
+      startingCash,
+      days
+    ) {
+      const events = [];
+      const warnings = [];
+
+      plans.forEach(plan => {
+        events.push({
+          day: plan.purchaseDay,
+          type: "purchase",
+          plan
+        });
+
+        events.push({
+          day: plan.saleDay,
+          type: "sale",
+          plan
+        });
+      });
+
+      events.sort((a, b) => {
+        if (a.day !== b.day) {
+          return a.day - b.day;
+        }
+
+        if (a.type !== b.type) {
+          return a.type === "sale" ? -1 : 1;
+        }
+
+        return a.plan.order - b.plan.order;
+      });
+
+      let cash = roundMoney(startingCash);
+      let totalInvested = 0;
+      let completedSales = 0;
+
+      events.forEach(event => {
+        const plan = event.plan;
+
+        if (event.day > days) {
+          return;
+        }
+
+        if (event.type === "purchase") {
+          const source = plan.sourceId
+            ? byId.get(plan.sourceId)
+            : null;
+
+          if (source && !source.sold) {
+            plan.status =
+              `Not purchased — ${source.name} did not ` +
+              `produce available sale proceeds`;
+
+            return;
+          }
+
+          if (cash + 0.005 < plan.totalPurchase) {
+            const shortage = roundMoney(
+              plan.totalPurchase - cash
+            );
+
+            plan.status =
+              `Not purchased — short ${money(shortage)}`;
+
+            warnings.push(
+              `${plan.name} could not be purchased on day ` +
+              `${Math.round(plan.purchaseDay)} because the ` +
+              `cash pool was short ${money(shortage)}.`
+            );
+
+            return;
+          }
+
+          cash = roundMoney(
+            cash - plan.totalPurchase
+          );
+
+          totalInvested = roundMoney(
+            totalInvested + plan.totalPurchase
+          );
+
+          plan.funded = true;
+
+          plan.status =
+            `Held — expected sale on day ` +
+            `${Math.round(plan.saleDay)}`;
+        } else if (plan.funded) {
+          cash = roundMoney(
+            cash + plan.netSale
+          );
+
+          plan.sold = true;
+
+          plan.status =
+            `Sold on day ${Math.round(plan.saleDay)}`;
+
+          completedSales += plan.quantity;
+        }
+      });
+
+      plans.forEach(plan => {
+        if (plan.purchaseDay > days) {
+          plan.status =
+            `Planned after projection — purchase day ` +
+            `${Math.round(plan.purchaseDay)}`;
+        }
+      });
+
+      const unsoldPlans = plans.filter(
+        plan => plan.funded && !plan.sold
+      );
+
+      const unsoldCost = roundMoney(
+        unsoldPlans.reduce(
+          (sum, plan) => sum + plan.totalPurchase,
+          0
+        )
+      );
+
+      const unsoldValue = roundMoney(
+        unsoldPlans.reduce(
+          (sum, plan) => sum + plan.netSale,
+          0
+        )
+      );
+
+      const endingBalance = roundMoney(
+        cash + unsoldCost
+      );
+
+      const realizedProfit = roundMoney(
+        endingBalance - startingCash
+      );
+
+      const potentialEnding = roundMoney(
+        cash + unsoldValue
+      );
+
+      const potentialProfit = roundMoney(
+        potentialEnding - startingCash
+      );
+
+      return {
+        cash,
+        totalInvested,
+        completedSales,
+        unsoldCost,
+        unsoldValue,
+        endingBalance,
+        realizedProfit,
+        potentialProfit,
+        warnings
+      };
+    }
+
+    function updateCardPreview(plan) {
+      const purchasePercentage =
+        (plan.purchasePrice / plan.salePrice) * 100;
+
+      plan.element.querySelector(
+        ".purchase-percentage"
+      ).textContent =
+        `${purchasePercentage.toFixed(2)}%`;
+
+      const profitElement =
+        plan.element.querySelector(
+          ".expected-card-profit"
+        );
+
+      profitElement.textContent =
+        money(plan.expectedProfit);
+
+      profitElement.className =
+        `expected-card-profit ${
+          plan.expectedProfit > 0
+            ? "positive"
+            : plan.expectedProfit < 0
+              ? "negative"
+              : ""
+        }`;
+    }
+
+    function setProfitColor(element, value) {
+      element.classList.remove(
+        "positive",
+        "negative",
+        "neutral"
+      );
+
+      element.classList.add(
+        value > 0
+          ? "positive"
+          : value < 0
+            ? "negative"
+            : "neutral"
+      );
+    }
+
+    function resetOutputs() {
+      [
+        "endingBalance",
+        "realizedProfit",
+        "cashAtEnd",
+        "unsoldCost",
+        "unsoldValue",
+        "potentialProfit",
+        "totalInvested"
+      ].forEach(id => {
+        document.getElementById(id).textContent =
+          "$0.00";
+      });
+
+      document.getElementById(
+        "completedSales"
+      ).textContent = "0";
+
+      document.getElementById(
+        "breakdownBody"
+      ).innerHTML = "";
+
+      document.getElementById(
+        "projectionSummary"
+      ).textContent = "";
+    }
+
+    function calculate() {
+      clearMessages();
+
+      try {
+        const startingCash =
+          numberValue("startingCash");
+
+        const days = projectionDays();
+
+        const defaultFee =
+          numberValue("defaultFee");
+
+        const defaultShipping =
+          numberValue("defaultShipping");
+
+        const defaultOther =
+          numberValue("defaultOther");
+
+        if (
+          !Number.isFinite(startingCash) ||
+          startingCash <= 0
+        ) {
+          throw new Error(
+            "Starting available cash must be greater than $0."
+          );
+        }
+
+        if (
+          !Number.isFinite(days) ||
+          days <= 0
+        ) {
+          throw new Error(
+            "Projection length must be greater than 0."
+          );
+        }
+
+        if (
+          !Number.isFinite(defaultFee) ||
+          defaultFee < 0 ||
+          defaultFee > 100
+        ) {
+          throw new Error(
+            "Default selling fee must be between 0% and 100%."
+          );
+        }
+
+        if (
+          !Number.isFinite(defaultShipping) ||
+          defaultShipping < 0 ||
+          !Number.isFinite(defaultOther) ||
+          defaultOther < 0
+        ) {
+          throw new Error(
+            "Default optional costs cannot be negative."
+          );
+        }
+
+        document.getElementById(
+          "daysDisplay"
+        ).value = Math.round(days);
+
+        const defaults = {
+          fee: defaultFee,
+          shipping: defaultShipping,
+          other: defaultOther
+        };
+
+        const plans = readCardPlans(defaults);
+        const byId = calculateSchedules(plans);
+
+        const result = runCashPool(
+          plans,
+          byId,
+          roundMoney(startingCash),
+          days
+        );
+
+        plans.forEach(updateCardPreview);
+
+        document.getElementById(
+          "endingBalance"
+        ).textContent = money(result.endingBalance);
+
+        document.getElementById(
+          "realizedProfit"
+        ).textContent = money(result.realizedProfit);
+
+        document.getElementById(
+          "cashAtEnd"
+        ).textContent = money(result.cash);
+
+        document.getElementById(
+          "completedSales"
+        ).textContent = wholeNumber.format(
+          result.completedSales
+        );
+
+        document.getElementById(
+          "unsoldCost"
+        ).textContent = money(result.unsoldCost);
+
+        document.getElementById(
+          "unsoldValue"
+        ).textContent = money(result.unsoldValue);
+
+        document.getElementById(
+          "potentialProfit"
+        ).textContent = money(result.potentialProfit);
+
+        document.getElementById(
+          "totalInvested"
+        ).textContent = money(result.totalInvested);
+
+        setProfitColor(
+          document.getElementById("realizedProfit"),
+          result.realizedProfit
+        );
+
+        setProfitColor(
+          document.getElementById("potentialProfit"),
+          result.potentialProfit
+        );
+
+        const length =
+          document.getElementById(
+            "projectionLength"
+          ).value;
+
+        const unit =
+          document.getElementById(
+            "projectionUnit"
+          ).value;
+
+        document.getElementById(
+          "projectionSummary"
+        ).textContent =
+          `Results after ${length} ${unit} ` +
+          `(${Math.round(days)} days).`;
+
+        document.getElementById(
+          "breakdownBody"
+        ).innerHTML = plans.map(plan => {
+          const source = plan.sourceId
+            ? byId.get(plan.sourceId)
+            : null;
+
+          const sourceText = source
+            ? `After ${source.name}`
+            : "Starting cash";
+
+          const roi =
+            plan.totalPurchase > 0
+              ? (
+                  plan.expectedProfit /
+                  plan.totalPurchase
+                ) * 100
+              : 0;
+
+          return `
+            <tr>
+              <td>
+                ${safeText(plan.name)}
+                ${plan.quantity > 1 ? ` × ${plan.quantity}` : ""}
+              </td>
+              <td>${safeText(sourceText)}</td>
+              <td>${Math.round(plan.purchaseDay)}</td>
+              <td>${safeText(plan.status)}</td>
+              <td>${money(plan.totalPurchase)}</td>
+              <td>${money(plan.netSale)}</td>
+              <td class="${
+                plan.expectedProfit > 0
+                  ? "positive"
+                  : plan.expectedProfit < 0
+                    ? "negative"
+                    : ""
+              }">
+                ${money(plan.expectedProfit)}
+              </td>
+              <td>${roi.toFixed(2)}%</td>
+            </tr>
+          `;
+        }).join("");
+
+        showWarnings(result.warnings);
+      } catch (error) {
+        showError(
+          error.message ||
+          "Please check the entered values."
+        );
+
+        resetOutputs();
+      }
+    }
+
+    function loadExample() {
+      document.getElementById(
+        "startingCash"
+      ).value = 2000;
+
+      document.getElementById(
+        "projectionLength"
+      ).value = 6;
+
+      document.getElementById(
+        "projectionUnit"
+      ).value = "months";
+
+      document.getElementById(
+        "defaultFee"
+      ).value = 0;
+
+      document.getElementById(
+        "defaultShipping"
+      ).value = 0;
+
+      document.getElementById(
+        "defaultOther"
+      ).value = 0;
+
+      cardList.innerHTML = "";
+      nextCardId = 1;
+
+      const firstId = addCard({
+        name: "Card A",
+        purchasePrice: 800,
+        salePrice: 1000,
+        daysToSell: 30
+      });
+
+      addCard({
+        name: "Card B",
+        purchasePrice: 600,
+        salePrice: 800,
+        daysToSell: 60
+      });
+
+      addCard(
+        {
+          name: "Card C",
+          purchasePrice: 500,
+          salePrice: 700,
+          daysToSell: 45
+        },
+        firstId
+      );
+
+      calculate();
+    }
+
+    document
+      .getElementById("addStartingCardTop")
+      .addEventListener(
+        "click",
+        () => addCard()
+      );
+
+    document
+      .getElementById("addStartingCardBottom")
+      .addEventListener(
+        "click",
+        () => addCard()
+      );
+
+    document
+      .getElementById("resetButton")
+      .addEventListener(
+        "click",
+        loadExample
+      );
+
+    document.addEventListener("input", event => {
+      if (!event.target.matches("input, select")) {
+        return;
+      }
+
+      if (
+        event.target.classList.contains("card-name")
+      ) {
+        refreshFundingOptions();
+      }
+
+      const card =
+        event.target.closest(".card-plan");
+
+      if (card) {
+        updateCardVisibility(card);
+      }
+
+      calculate();
+    });
+
+    document.addEventListener("change", event => {
+      if (!event.target.matches("input, select")) {
+        return;
+      }
+
+      const card =
+        event.target.closest(".card-plan");
+
+      if (card) {
+        updateCardVisibility(card);
+      }
+
+      calculate();
+    });
+
+    loadExample();
+  </script>
+</body>
+</html>
