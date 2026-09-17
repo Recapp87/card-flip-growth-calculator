@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#05070b">
+  <title>Group Portfolio Calculator</title>
+
+  <style>
+    :root {
+      --background: #05070b;
+      --panel: #111827;
+      --panel-light: #172033;
+      --border: #2b3850;
+      --text: #f7f9fc;
+      --muted: #9ca9bd;
+      --blue: #2877ff;
+      --blue-light: #55a7ff;
+      --silver: #c7d0dc;
+      --green: #35d07f;
+      --red: #ff6b78;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(40, 119, 255, 0.18), transparent 34rem),
+        var(--background);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button,
+    select {
+      cursor: pointer;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 26px 0 48px;
+    }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .nav a {
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(17, 24, 39, 0.86);
+      color: var(--silver);
+      text-decoration: none;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .nav a.active {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 8px 24px rgba(40, 119, 255, 0.28);
+    }
+
+    .hero {
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--blue-light);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(1.9rem, 6vw, 3.2rem);
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+    }
+
+    h2 {
+      margin-bottom: 6px;
+      font-size: 1.2rem;
+    }
+
+    .subtitle,
+    .section-copy,
+    .fine-print {
+      color: var(--muted);
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin-bottom: 0;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(17, 24, 39, 0.94);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .section-copy {
+      margin-bottom: 0;
+      font-size: 0.91rem;
+    }
+
+    .settings-grid,
+    .cost-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      color: var(--silver);
+      font-size: 0.79rem;
+      font-weight: 750;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: block;
+      margin-top: 6px;
+    }
+
+    .prefix,
+    .suffix {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .prefix {
+      left: 13px;
+    }
+
+    .suffix {
+      right: 13px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      outline: none;
+      background: #0a0f19;
+      color: var(--text);
+      padding: 11px 12px;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--blue-light);
+      box-shadow: 0 0 0 3px rgba(40, 119, 255, 0.18);
+    }
+
+    input.with-prefix {
+      padding-left: 27px;
+    }
+
+    input.with-suffix {
+      padding-right: 32px;
+    }
+
+    .duration-control {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 7px;
+    }
+
+    .group-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .group-card {
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--panel-light);
+      padding: 15px;
+    }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 13px;
+    }
+
+    .group-title {
+      margin: 0;
+      color: var(--blue-light);
+      font-weight: 800;
+    }
+
+    .group-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.72fr 1fr 0.88fr 0.88fr;
+      gap: 10px;
+    }
+
+    .allocation-line {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .remove-button,
+    .secondary-button,
+    .primary-button {
+      min-height: 42px;
+      border-radius: 11px;
+      padding: 9px 14px;
+      font-weight: 800;
+    }
+
+    .remove-button {
+      min-height: auto;
+      border: 0;
+      background: transparent;
+      color: #ff9ca5;
+      padding: 5px 6px;
+    }
+
+    .secondary-button {
+      border: 1px solid var(--blue);
+      background: rgba(40, 119, 255, 0.1);
+      color: var(--blue-light);
+    }
+
+    .primary-button {
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 8px 24px rgba(40, 119, 255, 0.26);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #0a0f19;
+    }
+
+    summary {
+      padding: 14px 16px;
+      color: var(--silver);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .details-body {
+      padding: 0 16px 16px;
+    }
+
+    .error {
+      display: none;
+      margin: 0 0 14px;
+      border: 1px solid rgba(255, 107, 120, 0.52);
+      border-radius: 11px;
+      background: rgba(255, 107, 120, 0.1);
+      color: #ffc0c6;
+      padding: 11px 13px;
+      font-size: 0.9rem;
+    }
+
+    .error.visible {
+      display: block;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .result-card {
+      min-height: 116px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #0a0f19;
+      padding: 15px;
+    }
+
+    .result-card.primary {
+      border-color: var(--blue);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(40, 119, 255, 0.18),
+          rgba(10, 15, 25, 0.98)
+        );
+    }
+
+    .result-label {
+      display: block;
+      min-height: 38px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    .result-value {
+      display: block;
+      margin-top: 5px;
+      font-size: clamp(1.15rem, 4vw, 1.65rem);
+      font-weight: 850;
+      letter-spacing: -0.035em;
+      overflow-wrap: anywhere;
+    }
+
+    .positive {
+      color: var(--green);
+    }
+
+    .negative {
+      color: var(--red);
+    }
+
+    .neutral {
+      color: var(--text);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      background: #0a0f19;
+    }
+
+    th,
+    td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--border);
+      text-align: right;
+      white-space: nowrap;
+      font-size: 0.84rem;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.74rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .fine-print {
+      margin: 14px 0 0;
+      font-size: 0.79rem;
+    }
+
+    @media (max-width: 860px) {
+      .settings-grid,
+      .cost-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .group-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .group-grid label:first-child {
+        grid-column: 1 / -1;
+      }
+
+      .results-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        width: min(100% - 18px, 1120px);
+        padding-top: 12px;
+      }
+
+      .nav,
+      .settings-grid,
+      .cost-grid,
+      .group-grid,
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav a {
+        min-height: 40px;
+      }
+
+      .section {
+        padding: 16px;
+      }
+
+      .group-grid label:first-child {
+        grid-column: auto;
+      }
+
+      .section-heading {
+        display: block;
+      }
+
+      .section-heading .secondary-button {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .result-card {
+        min-height: 0;
+      }
+
+      .result-label {
+        min-height: 0;
+      }
+
+      .button-row > * {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <nav class="nav" aria-label="Calculator pages">
+      <a href="index.html">Single-Card Calculator</a>
+      <a href="group-portfolio.html" class="active" aria-current="page">
+        Group Portfolio Calculator
+      </a>
+      <a href="detailed-portfolio.html">Detailed Portfolio Calculator</a>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">The Card TBL</p>
+      <h1>Group Portfolio Calculator</h1>
+      <p class="subtitle">
+        Divide your investment among groups with different selling speeds and
+        see how each part of the portfolio may grow over time.
+      </p>
+    </header>
+
+    <div class="panel">
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <h2>Portfolio settings</h2>
+            <p class="section-copy">
+              Choose the total available money and the length of the projection.
+            </p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <label>
+            Starting investment
+            <span class="input-wrap">
+              <span class="prefix">$</span>
+              <input
+                id="startingInvestment"
+                class="with-prefix"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value="5000"
+                inputmode="decimal"
+              >
+            </span>
+          </label>
+
+          <label>
+            Projection length
+            <span class="duration-control">
+              <span class="input-wrap">
+                <input
+                  id="projectionLength"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value="12"
+                  inputmode="numeric"
+                >
+              </span>
+
+              <select id="projectionUnit" aria-label="Projection unit">
+                <option value="days">Days</option>
+                <option value="months" selected>Months</option>
+                <option value="years">Years</option>
+              </select>
+            </span>
+          </label>
+
+          <label>
+            Days before reinvesting
+            <span class="input-wrap">
+              <input
+                id="reinvestmentDelay"
+                type="number"
+                min="0"
+                step="1"
+                value="0"
+                inputmode="numeric"
+              >
+            </span>
+          </label>
+
+          <label>
+            Unallocated cash
+            <span class="input-wrap">
+              <span class="prefix">$</span>
+              <input
+                id="unallocatedDisplay"
+                class="with-prefix"
+                type="text"
+                value="0.00"
+                readonly
+                aria-readonly="true"
+              >
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <h2>Card groups</h2>
+            <p class="section-copy">
+              Cards in each group are treated as one batch and are assumed to
+              sell after the group’s average selling time.
+            </p>
+          </div>
+
+          <button id="addGroupTop" class="secondary-button" type="button">
+            + Add group
+          </button>
+        </div>
+
+        <div id="groupList" class="group-list"></div>
+
+        <div class="button-row">
+          <button id="addGroupBottom" class="secondary-button" type="button">
+            + Add another group
+          </button>
+
+          <button id="resetButton" class="primary-button" type="button">
+            Reset example
+          </button>
+        </div>
+      </section>
+
+      <section class="section">
+        <details>
+          <summary>Optional costs</summary>
+
+          <div class="details-body">
+            <p class="section-copy">
+              These costs are deducted each time a card sells. Leave them at
+              zero if you do not want to include expenses.
+            </p>
+
+            <div class="cost-grid" style="margin-top: 14px;">
+              <label>
+                Selling/platform fee
+                <span class="input-wrap">
+                  <input
+                    id="sellingFee"
+                    class="with-suffix"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    value="0"
+                    inputmode="decimal"
+                  >
+                  <span class="suffix">%</span>
+                </span>
+              </label>
+
+              <label>
+                Shipping per card sold
+                <span class="input-wrap">
+                  <span class="prefix">$</span>
+                  <input
+                    id="shippingCost"
+                    class="with-prefix"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    inputmode="decimal"
+                  >
+                </span>
+              </label>
+
+              <label>
+                Other cost per card
+                <span class="input-wrap">
+                  <span class="prefix">$</span>
+                  <input
+                    id="otherCost"
+                    class="with-prefix"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    inputmode="decimal"
+                  >
+                </span>
+              </label>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <h2>Projected results</h2>
+            <p id="projectionSummary" class="section-copy"></p>
+          </div>
+        </div>
+
+        <p id="errorMessage" class="error" role="alert"></p>
+
+        <div class="results-grid" aria-live="polite">
+          <div class="result-card primary">
+            <span class="result-label">Ending balance at cost</span>
+            <strong id="endingBalance" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">Realized profit</span>
+            <strong id="realizedProfit" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">Completed card sales</span>
+            <strong id="completedSales" class="result-value neutral">0</strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">Unsold inventory cost</span>
+            <strong id="unsoldCost" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">
+              Expected net value of unsold inventory
+            </span>
+            <strong id="unsoldValue" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+
+          <div class="result-card">
+            <span class="result-label">
+              Potential total profit after unsold cards sell
+            </span>
+            <strong id="potentialProfit" class="result-value neutral">
+              $0.00
+            </strong>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Group</th>
+                <th>Allocated</th>
+                <th>Completed rounds</th>
+                <th>Card sales</th>
+                <th>Realized profit</th>
+                <th>Unsold cost</th>
+                <th>Expected unsold value</th>
+              </tr>
+            </thead>
+
+            <tbody id="breakdownBody"></tbody>
+          </table>
+        </div>
+
+        <p class="fine-print">
+          Projections assume each group sells as one batch, every completed
+          sale is paid in full, and available proceeds are reinvested after the
+          selected delay. “Realized profit” includes completed sales only.
+          Unsold-card profit remains potential until those cards sell.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const groupList = document.getElementById("groupList");
+    const errorMessage = document.getElementById("errorMessage");
+
+    const exampleGroups = [
+      {
+        name: "Fast sellers",
+        quantity: 5,
+        allocation: 2000,
+        purchasePercent: 80,
+        daysToSell: 14
+      },
+      {
+        name: "Average sellers",
+        quantity: 5,
+        allocation: 2000,
+        purchasePercent: 80,
+        daysToSell: 45
+      },
+      {
+        name: "Slow sellers",
+        quantity: 2,
+        allocation: 1000,
+        purchasePercent: 80,
+        daysToSell: 120
+      }
+    ];
+
+    let nextGroupId = 1;
+
+    const currency = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    const wholeNumber = new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: 0
+    });
+
+    function money(value) {
+      if (!Number.isFinite(value)) {
+        return "Too large";
+      }
+
+      return currency.format(value);
+    }
+
+    function roundMoney(value) {
+      return Math.round((value + Number.EPSILON) * 100) / 100;
+    }
+
+    function numberValue(id) {
+      return Number(document.getElementById(id).value);
+    }
+
+    function safeText(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function addGroup(values = {}) {
+      const id = nextGroupId++;
+      const group = document.createElement("article");
+
+      group.className = "group-card";
+      group.dataset.groupId = id;
+
+      group.innerHTML = `
+        <div class="group-header">
+          <p class="group-title">Card group ${id}</p>
+          <button
+            class="remove-button"
+            type="button"
+            aria-label="Remove this group"
+          >
+            Remove
+          </button>
+        </div>
+
+        <div class="group-grid">
+          <label>
+            Group name
+            <span class="input-wrap">
+              <input
+                class="group-name"
+                type="text"
+                value="${safeText(values.name || `Group ${id}`)}"
+                maxlength="60"
+              >
+            </span>
+          </label>
+
+          <label>
+            Number of cards
+            <span class="input-wrap">
+              <input
+                class="group-quantity"
+                type="number"
+                min="1"
+                step="1"
+                value="${values.quantity ?? 1}"
+                inputmode="numeric"
+              >
+            </span>
+          </label>
+
+          <label>
+            Total allocated
+            <span class="input-wrap">
+              <span class="prefix">$</span>
+              <input
+                class="group-allocation with-prefix"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value="${values.allocation ?? 0}"
+                inputmode="decimal"
+              >
+            </span>
+          </label>
+
+          <label>
+            Purchase percentage
+            <span class="input-wrap">
+              <input
+                class="group-percent with-suffix"
+                type="number"
+                min="0.01"
+                max="100"
+                step="0.01"
+                value="${values.purchasePercent ?? 80}"
+                inputmode="decimal"
+              >
+              <span class="suffix">%</span>
+            </span>
+          </label>
+
+          <label>
+            Average days to sell
+            <span class="input-wrap">
+              <input
+                class="group-days"
+                type="number"
+                min="1"
+                step="1"
+                value="${values.daysToSell ?? 30}"
+                inputmode="numeric"
+              >
+            </span>
+          </label>
+        </div>
+
+        <p class="allocation-line">
+          Allocation:
+          <strong class="allocation-share">0%</strong>
+          of starting investment · Average purchase per card:
+          <strong class="average-card-cost">$0.00</strong>
+        </p>
+      `;
+
+      group
+        .querySelector(".remove-button")
+        .addEventListener("click", () => {
+          if (groupList.children.length === 1) {
+            showError("At least one card group is required.");
+            return;
+          }
+
+          group.remove();
+          calculate();
+        });
+
+      groupList.appendChild(group);
+      calculate();
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.add("visible");
+    }
+
+    function clearError() {
+      errorMessage.textContent = "";
+      errorMessage.classList.remove("visible");
+    }
+
+    function projectionDays() {
+      const length = numberValue("projectionLength");
+      const unit = document.getElementById("projectionUnit").value;
+
+      const multiplier =
+        unit === "years"
+          ? 365
+          : unit === "months"
+            ? 365 / 12
+            : 1;
+
+      return length * multiplier;
+    }
+
+    function netSaleValue(
+      capital,
+      purchasePercent,
+      quantity,
+      feeRate,
+      shipping,
+      otherCost
+    ) {
+      const grossSale = capital / purchasePercent;
+      const variableFee = grossSale * feeRate;
+      const fixedCosts = quantity * (shipping + otherCost);
+
+      return Math.max(
+        0,
+        roundMoney(grossSale - variableFee - fixedCosts)
+      );
+    }
+
+    function simulateGroup(
+      group,
+      days,
+      delay,
+      feeRate,
+      shipping,
+      otherCost
+    ) {
+      const name =
+        group.querySelector(".group-name").value.trim() || "Unnamed group";
+
+      const quantity = Number(
+        group.querySelector(".group-quantity").value
+      );
+
+      const allocation = Number(
+        group.querySelector(".group-allocation").value
+      );
+
+      const purchasePercentInput = Number(
+        group.querySelector(".group-percent").value
+      );
+
+      const daysToSell = Number(
+        group.querySelector(".group-days").value
+      );
+
+      const purchasePercent = purchasePercentInput / 100;
+
+      if (!Number.isInteger(quantity) || quantity < 1) {
+        throw new Error(
+          `${name}: number of cards must be a whole number of at least 1.`
+        );
+      }
+
+      if (!Number.isFinite(allocation) || allocation <= 0) {
+        throw new Error(
+          `${name}: allocated amount must be greater than $0.`
+        );
+      }
+
+      if (
+        !Number.isFinite(purchasePercentInput) ||
+        purchasePercentInput <= 0 ||
+        purchasePercentInput > 100
+      ) {
+        throw new Error(
+          `${name}: purchase percentage must be greater than 0% and no more than 100%.`
+        );
+      }
+
+      if (!Number.isInteger(daysToSell) || daysToSell < 1) {
+        throw new Error(
+          `${name}: average days to sell must be a whole number of at least 1.`
+        );
+      }
+
+      let currentCapital = roundMoney(allocation);
+      let purchaseDay = 0;
+      let completedRounds = 0;
+      let activeInventory = true;
+      const maxRounds = 10000;
+
+      while (
+        purchaseDay + daysToSell <= days &&
+        completedRounds < maxRounds
+      ) {
+        currentCapital = netSaleValue(
+          currentCapital,
+          purchasePercent,
+          quantity,
+          feeRate,
+          shipping,
+          otherCost
+        );
+
+        if (!Number.isFinite(currentCapital)) {
+          throw new Error(
+            `${name}: the projected value is too large to calculate. Shorten the projection or increase the purchase percentage.`
+          );
+        }
+
+        completedRounds += 1;
+
+        const saleDay = purchaseDay + daysToSell;
+        const nextPurchaseDay = saleDay + delay;
+
+        if (currentCapital <= 0 || nextPurchaseDay >= days) {
+          activeInventory = false;
+          break;
+        }
+
+        purchaseDay = nextPurchaseDay;
+      }
+
+      if (completedRounds >= maxRounds) {
+        throw new Error(
+          `${name}: this projection creates too many rounds. Increase the selling time or shorten the projection.`
+        );
+      }
+
+      const realizedProfit = roundMoney(
+        currentCapital - allocation
+      );
+
+      const unsoldCost = activeInventory
+        ? currentCapital
+        : 0;
+
+      const expectedUnsoldValue = activeInventory
+        ? netSaleValue(
+            currentCapital,
+            purchasePercent,
+            quantity,
+            feeRate,
+            shipping,
+            otherCost
+          )
+        : 0;
+
+      const potentialEndingValue = activeInventory
+        ? expectedUnsoldValue
+        : currentCapital;
+
+      return {
+        name,
+        quantity,
+        allocation,
+        completedRounds,
+        completedSales: completedRounds * quantity,
+        currentCapital,
+        realizedProfit,
+        unsoldCost,
+        expectedUnsoldValue,
+        potentialEndingValue
+      };
+    }
+
+    function setProfitColor(element, value) {
+      element.classList.remove(
+        "positive",
+        "negative",
+        "neutral"
+      );
+
+      element.classList.add(
+        value > 0
+          ? "positive"
+          : value < 0
+            ? "negative"
+            : "neutral"
+      );
+    }
+
+    function resetOutputs() {
+      document.getElementById("endingBalance").textContent = "$0.00";
+      document.getElementById("realizedProfit").textContent = "$0.00";
+      document.getElementById("completedSales").textContent = "0";
+      document.getElementById("unsoldCost").textContent = "$0.00";
+      document.getElementById("unsoldValue").textContent = "$0.00";
+      document.getElementById("potentialProfit").textContent = "$0.00";
+      document.getElementById("breakdownBody").innerHTML = "";
+      document.getElementById("projectionSummary").textContent = "";
+    }
+
+    function calculate() {
+      clearError();
+
+      try {
+        const startingInvestment = numberValue(
+          "startingInvestment"
+        );
+
+        const days = projectionDays();
+        const delay = numberValue("reinvestmentDelay");
+        const feeInput = numberValue("sellingFee");
+        const shipping = numberValue("shippingCost");
+        const otherCost = numberValue("otherCost");
+
+        if (
+          !Number.isFinite(startingInvestment) ||
+          startingInvestment <= 0
+        ) {
+          throw new Error(
+            "Starting investment must be greater than $0."
+          );
+        }
+
+        if (!Number.isFinite(days) || days <= 0) {
+          throw new Error(
+            "Projection length must be greater than 0."
+          );
+        }
+
+        if (!Number.isInteger(delay) || delay < 0) {
+          throw new Error(
+            "Days before reinvesting must be a whole number of 0 or more."
+          );
+        }
+
+        if (
+          !Number.isFinite(feeInput) ||
+          feeInput < 0 ||
+          feeInput > 100
+        ) {
+          throw new Error(
+            "Selling fee must be between 0% and 100%."
+          );
+        }
+
+        if (
+          !Number.isFinite(shipping) ||
+          shipping < 0 ||
+          !Number.isFinite(otherCost) ||
+          otherCost < 0
+        ) {
+          throw new Error(
+            "Optional costs cannot be negative."
+          );
+        }
+
+        const cards = [
+          ...groupList.querySelectorAll(".group-card")
+        ];
+
+        const totalAllocated = cards.reduce(
+          (sum, group) => {
+            const amount = Number(
+              group.querySelector(".group-allocation").value
+            );
+
+            return sum + (
+              Number.isFinite(amount) ? amount : 0
+            );
+          },
+          0
+        );
+
+        const unallocated = roundMoney(
+          startingInvestment - totalAllocated
+        );
+
+        document.getElementById(
+          "unallocatedDisplay"
+        ).value = unallocated.toFixed(2);
+
+        cards.forEach(group => {
+          const amount =
+            Number(
+              group.querySelector(".group-allocation").value
+            ) || 0;
+
+          const quantity =
+            Number(
+              group.querySelector(".group-quantity").value
+            ) || 0;
+
+          const share =
+            startingInvestment > 0
+              ? (amount / startingInvestment) * 100
+              : 0;
+
+          const averageCost =
+            quantity > 0
+              ? amount / quantity
+              : 0;
+
+          group.querySelector(
+            ".allocation-share"
+          ).textContent = `${share.toFixed(1)}%`;
+
+          group.querySelector(
+            ".average-card-cost"
+          ).textContent = money(averageCost);
+        });
+
+        if (unallocated < -0.009) {
+          throw new Error(
+            `Group allocations exceed the starting investment by ${money(
+              Math.abs(unallocated)
+            )}.`
+          );
+        }
+
+        const feeRate = feeInput / 100;
+
+        const results = cards.map(group =>
+          simulateGroup(
+            group,
+            days,
+            delay,
+            feeRate,
+            shipping,
+            otherCost
+          )
+        );
+
+        const totals = results.reduce(
+          (sum, result) => {
+            sum.currentCapital += result.currentCapital;
+            sum.completedSales += result.completedSales;
+            sum.unsoldCost += result.unsoldCost;
+            sum.expectedUnsoldValue +=
+              result.expectedUnsoldValue;
+            sum.potentialEndingValue +=
+              result.potentialEndingValue;
+
+            return sum;
+          },
+          {
+            currentCapital: 0,
+            completedSales: 0,
+            unsoldCost: 0,
+            expectedUnsoldValue: 0,
+            potentialEndingValue: 0
+          }
+        );
+
+        const endingBalance = roundMoney(
+          totals.currentCapital + Math.max(0, unallocated)
+        );
+
+        const realizedProfit = roundMoney(
+          endingBalance - startingInvestment
+        );
+
+        const potentialEnding = roundMoney(
+          totals.potentialEndingValue +
+            Math.max(0, unallocated)
+        );
+
+        const potentialProfit = roundMoney(
+          potentialEnding - startingInvestment
+        );
+
+        document.getElementById(
+          "endingBalance"
+        ).textContent = money(endingBalance);
+
+        document.getElementById(
+          "realizedProfit"
+        ).textContent = money(realizedProfit);
+
+        document.getElementById(
+          "completedSales"
+        ).textContent = wholeNumber.format(
+          totals.completedSales
+        );
+
+        document.getElementById(
+          "unsoldCost"
+        ).textContent = money(totals.unsoldCost);
+
+        document.getElementById(
+          "unsoldValue"
+        ).textContent = money(
+          totals.expectedUnsoldValue
+        );
+
+        document.getElementById(
+          "potentialProfit"
+        ).textContent = money(potentialProfit);
+
+        setProfitColor(
+          document.getElementById("realizedProfit"),
+          realizedProfit
+        );
+
+        setProfitColor(
+          document.getElementById("potentialProfit"),
+          potentialProfit
+        );
+
+        const length =
+          document.getElementById(
+            "projectionLength"
+          ).value;
+
+        const unit =
+          document.getElementById(
+            "projectionUnit"
+          ).value;
+
+        document.getElementById(
+          "projectionSummary"
+        ).textContent =
+          `Results after ${length} ${unit}, with ${delay} ` +
+          `day${delay === 1 ? "" : "s"} before reinvestment.`;
+
+        document.getElementById(
+          "breakdownBody"
+        ).innerHTML = results.map(result => `
+          <tr>
+            <td>${safeText(result.name)}</td>
+            <td>${money(result.allocation)}</td>
+            <td>${wholeNumber.format(result.completedRounds)}</td>
+            <td>${wholeNumber.format(result.completedSales)}</td>
+            <td class="${
+              result.realizedProfit > 0
+                ? "positive"
+                : result.realizedProfit < 0
+                  ? "negative"
+                  : ""
+            }">
+              ${money(result.realizedProfit)}
+            </td>
+            <td>${money(result.unsoldCost)}</td>
+            <td>${money(result.expectedUnsoldValue)}</td>
+          </tr>
+        `).join("");
+      } catch (error) {
+        showError(
+          error.message || "Please check the entered values."
+        );
+
+        resetOutputs();
+      }
+    }
+
+    function loadExample() {
+      document.getElementById(
+        "startingInvestment"
+      ).value = 5000;
+
+      document.getElementById(
+        "projectionLength"
+      ).value = 12;
+
+      document.getElementById(
+        "projectionUnit"
+      ).value = "months";
+
+      document.getElementById(
+        "reinvestmentDelay"
+      ).value = 0;
+
+      document.getElementById(
+        "sellingFee"
+      ).value = 0;
+
+      document.getElementById(
+        "shippingCost"
+      ).value = 0;
+
+      document.getElementById(
+        "otherCost"
+      ).value = 0;
+
+      groupList.innerHTML = "";
+      nextGroupId = 1;
+
+      exampleGroups.forEach(addGroup);
+      calculate();
+    }
+
+    document
+      .getElementById("addGroupTop")
+      .addEventListener("click", () => addGroup());
+
+    document
+      .getElementById("addGroupBottom")
+      .addEventListener("click", () => addGroup());
+
+    document
+      .getElementById("resetButton")
+      .addEventListener("click", loadExample);
+
+    document.addEventListener("input", event => {
+      if (event.target.matches("input, select")) {
+        calculate();
+      }
+    });
+
+    document.addEventListener("change", event => {
+      if (event.target.matches("input, select")) {
+        calculate();
+      }
+    });
+
+    loadExample();
+  </script>
+</body>
+</html>
